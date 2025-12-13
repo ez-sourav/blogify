@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('./partials/head.ejs') %>
+    <title>Add New Blog</title>
+
+    <style>
+      .blog-card {
+        max-width: 650px;
+        margin: 0 auto;
+      }
+
+      #body {
+        height: 200px;
+      }
+    </style>
+  </head>
+
+  <body class="bg-light">
+    <%- include('./partials/nav.ejs') %>
+
+    <div class="container mt-5">
+      <div class="card shadow-sm border-0 rounded-3 p-4 blog-card">
+
+        <h2 class="fw-bold text-center mb-4 text-primary">Create New Blog</h2>
+
+        <form action="/blog" method="post" enctype="multipart/form-data">
+
+          <!-- Cover Image -->
+          <div class="mb-3">
+            <label for="coverImage" class="form-label fw-semibold">Cover Image</label>
+            <input
+              type="file"
+              class="form-control"
+              id="coverImage"
+              name="coverImage"
+              required
+            />
+            <div class="form-text">Upload a clean image representing your blog.</div>
+          </div>
+
+          <!-- Title -->
+          <div class="mb-3">
+            <label for="title" class="form-label fw-semibold">Title</label>
+            <input
+              type="text"
+              class="form-control"
+              id="title"
+              name="title"
+              placeholder="Enter blog title"
+              required
+            />
+          </div>
+
+          <!-- Body -->
+          <div class="mb-3">
+            <label for="body" class="form-label fw-semibold">Content</label>
+            <textarea
+              class="form-control"
+              name="body"
+              id="body"
+              placeholder="Write your blog content here..."
+              required
+            ></textarea>
+          </div>
+
+          <!-- Submit -->
+          <div class="d-grid">
+            <button class="btn btn-primary fw-semibold py-2">Publish Blog</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <%- include('./partials/script.ejs') %>
+  </body>
+</html>
