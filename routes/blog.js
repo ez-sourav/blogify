@@ -5,6 +5,62 @@ const upload = require("../middlewares/upload");
 const Blog = require("../models/blog");
 const Comment = require("../models/comment");
 const router = Router();
+const mongoose = require("mongoose");
+
+// edit blog
+
+const { checkBlogOwner } = require("../middlewares/checkBlogOwner");
+
+router.get(
+  "/edit/:id",
+  requireLogin,
+  checkBlogOwner,
+  (req, res) => {
+    res.render("editBlog", {
+      user: req.user,
+      blog: req.blog,
+    });
+  }
+);
+
+router.post(
+  "/edit/:id",
+  requireLogin,
+  checkBlogOwner,
+  upload.single("coverImage"),
+  async (req, res) => {
+    const { title, body } = req.body;
+
+    const updateData = {
+      title,
+      body,
+    };
+
+    // if new image uploaded
+    if (req.file) {
+      updateData.coverImageURL = req.file.path;
+    }
+
+    await Blog.findByIdAndUpdate(req.params.id, updateData);
+
+    res.redirect(`/blog/${req.params.id}`);
+  }
+);
+
+
+
+
+// delete blog
+
+router.post(
+  "/delete/:id",
+  requireLogin,
+  checkBlogOwner,
+  async (req, res) => {
+    await req.blog.deleteOne();
+    res.redirect("/");
+  }
+);
 
 router.get("/add-new", requireLogin, (req, res) => {
   return res.render("addBlogs", {
@@ -13,10 +69,28 @@ router.get("/add-new", requireLogin, (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const blog = await Blog.findById(req.params.id).populate("createdBy");
-  const comments = await Comment.find({ blogId: req.params.id }).populate(
-    "createdBy"
-  );
+  const { id } = req.params;
+
+  //  Validate ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).render("404", {
+      user: req.user,
+      message: "Blog not found or invalid URL",
+    });
+  }
+
+  // Query DB safely
+  const blog = await Blog.findById(id).populate("createdBy");
+
+  if (!blog) {
+    return res.status(404).render("404", {
+      user: req.user,
+      message: "Blog not found or has been deleted",
+    });
+  }
+
+  const comments = await Comment.find({ blogId: id })
+    .populate("createdBy");
 
   return res.render("blog", {
     user: req.user,
