@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('./partials/head.ejs') %>
+  <title>Edit Blog</title>
+</head>
+
+<body class="bg-light">
+  <%- include('./partials/nav.ejs') %>
+
+  <div class="container mt-5 mb-5">
+    <div class="card shadow-sm border-0 rounded-3 p-4">
+
+      <h2 class="fw-bold mb-4 text-warning">✏️ Edit Blog</h2>
+
+      <form action="/blog/edit/<%= blog._id %>" method="POST" enctype="multipart/form-data">
+
+        <!-- Title -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Title</label>
+          <input
+            type="text"
+            class="form-control"
+            name="title"
+            value="<%= blog.title %>"
+            required
+          />
+
+
+          <!-- Current Image -->
+<div class="mb-3">
+  <label class="form-label fw-semibold">Current Cover Image</label><br>
+  <img 
+    src="<%= blog.coverImageURL %>" 
+    style="max-height:200px; border-radius:10px;"
+  />
+</div>
+
+<!-- New Image -->
+<div class="mb-3">
+  <label class="form-label fw-semibold">
+    Change Cover Image (optional)
+  </label>
+  <input
+    type="file"
+    class="form-control"
+    name="coverImage"
+    accept="image/*"
+  />
+</div>
+
+        </div>
+
+        <!-- Body -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Content</label>
+          <textarea
+            class="form-control"
+            name="body"
+            rows="8"
+            required
+          ><%= blog.body %></textarea>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-warning">
+            Update Blog
+          </button>
+
+          <a href="/blog/<%= blog._id %>" class="btn btn-secondary">
+            Cancel
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <%- include('./partials/footer.ejs') %>
+  <%- include('./partials/script.ejs') %>
+</body>
+</html>
