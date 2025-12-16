@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('./partials/head.ejs') %>
+  <title>404 - Not Found</title>
+
+  <style>
+    .error-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .error-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .error-code {
+      font-size: 6rem;
+      font-weight: 800;
+    }
+  </style>
+</head>
+
+<body class="bg-light">
+  <div class="error-page">
+
+    <!-- NAVBAR -->
+    <%- include('./partials/nav.ejs') %>
+
+    <!-- CONTENT -->
+    <div class="error-content">
+      <div>
+        <h1 class="error-code text-danger">404</h1>
+        <h3 class="mb-3">Blog Not Found</h3>
+
+        <p class="text-muted mb-4">
+          <%= message %>
+        </p>
+
+        <a href="/" class="btn btn-primary">
+          Go Back Home
+        </a>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <%- include('./partials/footer.ejs') %>
+
+  </div>
+</body>
+</html>
