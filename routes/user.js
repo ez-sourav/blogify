@@ -31,14 +31,29 @@ router.get('/logout',(req,res)=>{
 router.post('/signup', async (req, res) => {
   const { fullName, email, password } = req.body;
 
-  const user = new User({
-    fullName,
-    email,
-    password,
-  });
+  try {
+    const user = new User({
+      fullName,
+      email,
+      password,
+    });
 
-  await user.save();   // ⚠ only one save() call → no double hook
-  return res.redirect('/');
+    await user.save();
+
+    return res.redirect('/');
+  } catch (error) {
+    // DUPLICATE EMAIL ERROR
+    if (error.code === 11000) {
+      return res.render('signup', {
+        error: "Email already exists. Please use another email.",
+      });
+    }
+
+    
+    return res.render('signup', {
+      error: "Something went wrong. Please try again.",
+    });
+  }
 });
 
 module.exports = router;
