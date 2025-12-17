@@ -7,85 +7,86 @@
     <style>
       .auth-card {
         max-width: 450px;
-        margin: 0 auto;
+        width: 100%;
       }
     </style>
   </head>
 
-  <body class="bg-light">
+  <body class="bg-light d-flex flex-column min-vh-100">
     <%- include('./partials/nav.ejs') %>
 
     <!-- Sign Up Form -->
-    <div class="container mt-5">
-      <div class="card shadow-sm border-0 rounded-3 p-4 auth-card">
-        <h2 class="text-center fw-bold mb-4 text-primary">Create Account</h2>
+    <main class="flex-grow-1 d-flex align-items-center">
+      <div class="container py-4">
+        <div class="card shadow-sm border-0 rounded-3 p-4 auth-card mx-auto">
+          <h2 class="text-center fw-bold mb-4 text-primary">
+            Create Account
+          </h2>
+          <% if (locals.error) { %>
+  <div class="container mt-3">
+    <div class="alert alert-danger shadow-sm">
+      <%= locals.error %>
+    </div>
+  </div>
+<% } %>
 
-        <form action="/user/signup" method="post">
-          <!-- Full Name -->
-          <div class="mb-3">
-            <label for="fullName" class="form-label fw-semibold"
-              >Full Name</label
-            >
-            <input
-              type="text"
-              class="form-control"
-              id="fullName"
-              name="fullName"
-              placeholder="Enter your full name"
-              required
-              pattern=".*\S.*"
-            />
-          </div>
 
-          <!-- Email -->
-          <div class="mb-3">
-            <label for="email" class="form-label fw-semibold"
-              >Email Address</label
-            >
-            <input
-              type="email"
-              class="form-control"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
-              required
-            />
-            <div class="form-text">
-              We'll never share your email with anyone else.
+          <form action="/user/signup" method="post">
+            <!-- Full Name -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Full Name</label>
+              <input
+                type="text"
+                class="form-control"
+                name="fullName"
+                placeholder="Enter your full name"
+                required
+              />
             </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Email Address</label>
+              <input
+                type="email"
+                class="form-control"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
+              <div class="form-text">
+                We'll never share your email with anyone else.
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                name="password"
+                placeholder="Create a password"
+                required
+              />
+            </div>
+
+            <button class="btn btn-primary w-100 py-2 fw-semibold">
+              Sign Up
+            </button>
+          </form>
+
+          <div class="text-center mt-3">
+            <small class="text-muted">Already have an account?</small>
+            <a href="/user/signin" class="fw-semibold text-decoration-none">
+              Sign In
+            </a>
           </div>
-
-          <!-- Password -->
-          <div class="mb-3">
-            <label for="password" class="form-label fw-semibold"
-              >Password</label
-            >
-            <input
-              type="password"
-              name="password"
-              class="form-control"
-              id="password"
-              placeholder="Create a password"
-              required
-            />
-          </div>
-
-          <!-- Submit Button -->
-          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
-            Sign Up
-          </button>
-        </form>
-
-        <div class="text-center mt-3">
-          <small class="text-muted">Already have an account?</small>
-          <a href="/user/signin" class="fw-semibold text-decoration-none"
-            >Sign In</a
-          >
         </div>
       </div>
-    </div>
+    </main>
 
-    <%- include('./partials/footer.ejs') %> <%- include('./partials/script.ejs')
-    %>
+    <%- include('./partials/footer.ejs') %>
+    <%- include('./partials/script.ejs') %>
   </body>
 </html>
