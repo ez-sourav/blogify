@@ -1,16 +1,38 @@
-<footer class="bg-dark text-light mt-auto">
-      <div class="container py-2 text-center">
+<footer class="bg-dark text-light">
+  <div class="container py-3 text-center">
 
-        <div class="my-3">
-          <a href="/" class="text-light text-decoration-none mx-2">Home</a>
-          <a href="/blog/add-new" class="text-light text-decoration-none mx-2">Add Blog</a>
-          <a href="/user/signup" class="text-light text-decoration-none mx-2">Sign Up</a>
-          <a href="/user/signin" class="text-light text-decoration-none mx-2">Sign In</a>
-        </div>
+    <div class="mb-2">
 
-        <p class="text-secondary small mb-0">
-          © <%= new Date().getFullYear() %> Blogify — All Rights Reserved.
-        </p>
+      <!-- Always show Home -->
+      <a href="/" class="text-light text-decoration-none mx-2">
+        Home
+      </a>
 
-      </div>
-    </footer>
+      <% if (locals.user) { %>
+        <!-- Logged-in user links -->
+        <a href="/blog/add-new" class="text-light text-decoration-none mx-2">
+          Add Blog
+        </a>
+
+        <a href="/user/logout" class="text-light text-decoration-none mx-2 text-danger">
+          Logout
+        </a>
+      <% } else { %>
+        <!-- Guest user links -->
+        <a href="/user/signup" class="text-light text-decoration-none mx-2">
+          Sign Up
+        </a>
+
+        <a href="/user/signin" class="text-light text-decoration-none mx-2">
+          Sign In
+        </a>
+      <% } %>
+
+    </div>
+
+    <p class="text-secondary small mb-0">
+      © <%= new Date().getFullYear() %> Blogify — All Rights Reserved.
+    </p>
+
+  </div>
+</footer>
