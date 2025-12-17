@@ -19,59 +19,63 @@
     </style>
   </head>
 
-  
   <body class="bg-light d-flex flex-column min-vh-100">
-
-    <%- include('./partials/nav.ejs') %>
+    <%- include('./partials/nav.ejs') %> <% if (deleted) { %>
+    <div class="container mt-3">
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        ✅ Blog deleted successfully
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+      </div>
+    </div>
+    <% } %>
 
     <!-- MAIN CONTENT -->
-    <div class="container mt-4">
+    <main class="flex-grow-1">
+      <div class="container py-4">
+        <h3 class="fw-bold mb-4">Latest Blogs</h3>
 
-      <h3 class="fw-bold mb-4">Latest Blogs</h3>
-
-      <% if (blogs.length === 0) { %>
+        <% if (blogs.length === 0) { %>
         <div class="alert alert-info text-center">
           No blogs available. Be the first to create one 🚀
         </div>
-      <% } else { %>
+        <% } else { %>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
           <% blogs.forEach(blog => { %>
-            <div class="col">
-              <div class="card border-0 shadow-sm rounded-3 h-100 overflow-hidden">
+          <div class="col">
+            <div
+              class="card border-0 shadow-sm rounded-3 h-100 overflow-hidden"
+            >
+              <img
+                src="<%= blog.coverImageURL %>"
+                class="blog-image"
+                alt="Blog Image"
+              />
 
-                <!-- Blog Image -->
-                <img 
-                  src="<%= blog.coverImageURL %>" 
-                  class="blog-image" 
-                  alt="Blog Image"
-                />
+              <div class="card-body d-flex flex-column p-3">
+                <h6 class="card-title fw-bold truncate-title mb-2">
+                  <%= blog.title %>
+                </h6>
 
-                <!-- Card Content -->
-                <div class="card-body d-flex flex-column p-3">
-                  <h6 class="card-title fw-bold truncate-title mb-2">
-                    <%= blog.title %>
-                  </h6>
-
-                  <a 
-                    href="/blog/<%= blog._id %>" 
-                    class="btn btn-primary btn-sm mt-auto w-100"
-                  >
-                    Read More
-                  </a>
-                </div>
-
+                <a
+                  href="/blog/<%= blog._id %>"
+                  class="btn btn-primary btn-sm mt-auto w-100"
+                >
+                  Read More
+                </a>
               </div>
             </div>
+          </div>
           <% }) %>
         </div>
-      <% } %>
+        <% } %>
+      </div>
+    </main>
 
-    </div>
-
-  
-    
-    <%- include('./partials/footer.ejs') %>
-    <%- include('./partials/script.ejs') %>
-    
+    <%- include('./partials/footer.ejs') %> <%- include('./partials/script.ejs')
+    %>
   </body>
 </html>
