@@ -11,17 +11,12 @@ const mongoose = require("mongoose");
 
 const { checkBlogOwner } = require("../middlewares/checkBlogOwner");
 
-router.get(
-  "/edit/:id",
-  requireLogin,
-  checkBlogOwner,
-  (req, res) => {
-    res.render("editBlog", {
-      user: req.user,
-      blog: req.blog,
-    });
-  }
-);
+router.get("/edit/:id", requireLogin, checkBlogOwner, (req, res) => {
+  res.render("editBlog", {
+    user: req.user,
+    blog: req.blog,
+  });
+});
 
 router.post(
   "/edit/:id",
@@ -47,20 +42,14 @@ router.post(
   }
 );
 
-
-
-
 // delete blog
 
-router.post(
-  "/delete/:id",
-  requireLogin,
-  checkBlogOwner,
-  async (req, res) => {
-    await req.blog.deleteOne();
-    res.redirect("/");
-  }
-);
+router.post("/delete/:id", requireLogin, checkBlogOwner, async (req, res) => {
+  await req.blog.deleteOne();
+
+  res.redirect("/?deleted=true");
+});
+
 
 router.get("/add-new", requireLogin, (req, res) => {
   return res.render("addBlogs", {
@@ -89,17 +78,39 @@ router.get("/:id", async (req, res) => {
     });
   }
 
-  const comments = await Comment.find({ blogId: id })
-    .populate("createdBy");
+  const comments = await Comment.find({ blogId: id }).populate("createdBy");
+
+  // for upload time
+  const timeAgo = (date) => {
+  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+
+  let interval = seconds / 31536000;
+  if (interval > 1) return Math.floor(interval) + " years ago";
+
+  interval = seconds / 2592000;
+  if (interval > 1) return Math.floor(interval) + " months ago";
+
+  interval = seconds / 86400;
+  if (interval > 1) return Math.floor(interval) + " days ago";
+
+  interval = seconds / 3600;
+  if (interval > 1) return Math.floor(interval) + " hours ago";
+
+  interval = seconds / 60;
+  if (interval > 1) return Math.floor(interval) + " minutes ago";
+
+  return "Just now";
+};
 
   return res.render("blog", {
     user: req.user,
     blog,
     comments,
+    timeAgo
   });
 });
 
-router.post("/comment/:blogId",requireLogin, async (req, res) => {
+router.post("/comment/:blogId", requireLogin, async (req, res) => {
   await Comment.create({
     content: req.body.content,
     blogId: req.params.blogId,
@@ -108,7 +119,11 @@ router.post("/comment/:blogId",requireLogin, async (req, res) => {
   return res.redirect(`/blog/${req.params.blogId}`);
 });
 
-router.post("/",requireLogin,upload.single("coverImage"),async (req, res) => {
+router.post(
+  "/",
+  requireLogin,
+  upload.single("coverImage"),
+  async (req, res) => {
     const { title, body } = req.body;
     const blog = await Blog.create({
       body,
