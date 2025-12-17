@@ -2,6 +2,15 @@ const { createHmac, randomBytes } = require("crypto");
 const { Schema, model } = require("mongoose");
 const { createTokenForUser } = require("../services/authentication");
 
+function capitalizeName(name) {
+  return name
+    .trim()
+    .toLowerCase()
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 const userSchema = new Schema(
   {
     fullName: {
@@ -13,9 +22,7 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
-    salt: {
-      type: String,
-    },
+    salt: String,
     password: {
       type: String,
       required: true,
@@ -33,38 +40,43 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", function () {
+userSchema.pre("save", async function () {
   const user = this;
 
+  // Capitalize full name
+  if (user.isModified("fullName")) {
+    user.fullName = capitalizeName(user.fullName);
+  }
+
+  // Hash password only if modified
   if (!user.isModified("password")) return;
 
-  const salt = randomBytes(16).toString();
+  const salt = randomBytes(16).toString("hex");
   const hashedPassword = createHmac("sha256", salt)
     .update(user.password)
     .digest("hex");
 
-  this.salt = salt;
-  this.password = hashedPassword;
+  user.salt = salt;
+  user.password = hashedPassword;
 });
 
-userSchema.static("matchPasswordAndGenerateToken",async function (email, password) {
-  const user = await this.findOne({ email });
-  if (!user) throw new Error("User Not Found");
 
-  const salt = user.salt;
-  const hashedPassword = user.password;
 
-  const userProvidedHash = createHmac("sha256", salt)
-    .update(password)
-    .digest("hex");
+userSchema.static(
+  "matchPasswordAndGenerateToken",
+  async function (email, password) {
+    const user = await this.findOne({ email });
+    if (!user) throw new Error("User Not Found");
 
-  if (hashedPassword !== userProvidedHash)
-    throw new Error("Incorrect Password");
+    const userProvidedHash = createHmac("sha256", user.salt)
+      .update(password)
+      .digest("hex");
 
-  const token = createTokenForUser(user);
-  return token;
-});
+    if (user.password !== userProvidedHash)
+      throw new Error("Incorrect Password");
 
-const User = model("user", userSchema);
+    return createTokenForUser(user);
+  }
+);
 
-module.exports = User;
+module.exports = model("user", userSchema);
