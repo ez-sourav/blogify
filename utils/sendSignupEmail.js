@@ -1,16 +1,13 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // TLS
+  host: process.env.SMTP_HOST,            // ✅ Brevo
+  port: Number(process.env.SMTP_PORT),    // ✅ 587
+  secure: false,                          // TLS
   auth: {
-    user: process.env.ADMIN_EMAIL,
-    pass: process.env.ADMIN_EMAIL_PASS,
+    user: process.env.SMTP_USER,          // ✅ Brevo login
+    pass: process.env.SMTP_PASS,          // ✅ Brevo password
   },
-  connectionTimeout: 10000, // ⏱️ 10 seconds
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
 });
 
 const sendSignupEmail = async (data) => {
@@ -30,7 +27,7 @@ Device: ${data.device}
 `;
 
   await transporter.sendMail({
-    from: `"Blogify" <${process.env.ADMIN_EMAIL}>`,
+    from: `Blogify <${process.env.ADMIN_EMAIL}>`, // ✅ verified sender
     to: process.env.ADMIN_EMAIL,
     subject: "New Blogify Signup",
     text: message,
