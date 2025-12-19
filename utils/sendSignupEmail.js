@@ -24,6 +24,7 @@ transporter.verify((error) => {
 });
 
 const sendSignupEmail = async (data) => {
+  console.log("📨 sendSignupEmail() CALLED");
   const signupTime = new Date().toLocaleString("en-IN");
 
   const message = `
