@@ -1,5 +1,7 @@
 const {Router} = require('express')
 const User = require('../models/user')
+const sendSignupEmail = require("../utils/sendSignupEmail");
+const getLocationFromIP = require("../utils/getLocationFromIP");
 
 const router = Router();
 
@@ -39,6 +41,20 @@ router.post('/signup', async (req, res) => {
     });
 
     await user.save();
+
+    // Get location with details
+
+    const location = await getLocationFromIP(req.userIP);
+
+    await sendSignupEmail({
+      name: user.fullName,
+      email: user.email,
+      ip: req.userIP,
+      device: req.headers["user-agent"],
+      city: location.city,
+      region: location.region,
+      country: location.country,
+    });
 
     return res.redirect('/');
   } catch (error) {
