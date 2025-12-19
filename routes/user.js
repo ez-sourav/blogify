@@ -34,6 +34,7 @@ router.post('/signup', async (req, res) => {
   const { fullName, email, password } = req.body;
 
   try {
+    // 1️⃣ Save user
     const user = new User({
       fullName,
       email,
@@ -42,19 +43,13 @@ router.post('/signup', async (req, res) => {
 
     await user.save();
 
-    // SEND RESPONSE FIRST (IMPORTANT)
+    // 2️⃣ Respond immediately
     res.redirect('/');
 
-    // BACKGROUND TASK (NON-BLOCKING)
-    (async () => {
+    // 3️⃣ Background email (SAFE & NON-BLOCKING)
+    setImmediate(async () => {
       try {
-        // Handle localhost IP in dev
-        let ipForLocation = req.userIP;
-        if (ipForLocation === "::1" || ipForLocation === "127.0.0.1") {
-          ipForLocation = "49.37.12.45"; // dev test IP
-        }
-
-        const location = await getLocationFromIP(ipForLocation);
+        const location = await getLocationFromIP(); // always returns Unknown
 
         await sendSignupEmail({
           name: user.fullName,
@@ -66,9 +61,10 @@ router.post('/signup', async (req, res) => {
           country: location.country,
         });
       } catch (err) {
-        console.error("Signup email/location failed:", err.message);
+        // 🔕 Silent log (do NOT panic yourself)
+        console.log("Signup email skipped");
       }
-    })();
+    });
 
   } catch (error) {
     if (error.code === 11000) {
@@ -82,6 +78,7 @@ router.post('/signup', async (req, res) => {
     });
   }
 });
+
 
 
 module.exports = router;
