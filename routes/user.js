@@ -42,34 +42,46 @@ router.post('/signup', async (req, res) => {
 
     await user.save();
 
-    // Get location with details
+    // SEND RESPONSE FIRST (IMPORTANT)
+    res.redirect('/');
 
-    const location = await getLocationFromIP(req.userIP);
+    // BACKGROUND TASK (NON-BLOCKING)
+    (async () => {
+      try {
+        // Handle localhost IP in dev
+        let ipForLocation = req.userIP;
+        if (ipForLocation === "::1" || ipForLocation === "127.0.0.1") {
+          ipForLocation = "49.37.12.45"; // dev test IP
+        }
 
-    await sendSignupEmail({
-      name: user.fullName,
-      email: user.email,
-      ip: req.userIP,
-      device: req.headers["user-agent"],
-      city: location.city,
-      region: location.region,
-      country: location.country,
-    });
+        const location = await getLocationFromIP(ipForLocation);
 
-    return res.redirect('/');
+        await sendSignupEmail({
+          name: user.fullName,
+          email: user.email,
+          ip: req.userIP,
+          device: req.headers["user-agent"],
+          city: location.city,
+          region: location.region,
+          country: location.country,
+        });
+      } catch (err) {
+        console.error("Signup email/location failed:", err.message);
+      }
+    })();
+
   } catch (error) {
-    // DUPLICATE EMAIL ERROR
     if (error.code === 11000) {
       return res.render('signup', {
         error: "Email already exists. Please use another email.",
       });
     }
 
-    
     return res.render('signup', {
       error: "Something went wrong. Please try again.",
     });
   }
 });
+
 
 module.exports = router;
