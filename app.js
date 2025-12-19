@@ -23,6 +23,16 @@ app.set("views", path.resolve("./views"));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// ADD THIS BLOCK (IP CAPTURE)
+app.set("trust proxy", true);
+app.use((req, res, next) => {
+  req.userIP =
+    req.headers["x-forwarded-for"]?.split(",")[0] ||
+    req.socket.remoteAddress;
+  next();
+});
+
 app.use(checkForAuthenticationCookie("token"));
 app.use(express.static(path.resolve("./public")));
 
